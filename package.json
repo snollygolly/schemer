@@ -1,0 +1,23 @@
+{
+  "name": "schemer",
+  "version": "1.0.0",
+  "description": "A tool to compare two similar database schemas to find the differences.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sq1agency/schemer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sq1agency/schemer/issues"
+  },
+  "homepage": "https://github.com/sq1agency/schemer#readme",
+  "dependencies": {
+    "co": "^4.6.0",
+    "promise-mysql": "^1.3.1"
+  }
+}

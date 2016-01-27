@@ -1,0 +1,11 @@
+{
+	 "databases":[
+			{
+				 "id":"local",
+				 "host":"localhost",
+				 "user":"root",
+				 "password":"root",
+				 "database":"local_db"
+			}
+	 ]
+}
