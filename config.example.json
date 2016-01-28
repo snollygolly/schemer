@@ -2,10 +2,24 @@
 	 "databases":[
 			{
 				 "id":"local",
-				 "host":"localhost",
+				 "host":"127.0.0.1",
 				 "user":"root",
 				 "password":"root",
-				 "database":"local_db"
+				 "database":"test_local"
+			},
+			{
+				 "id":"development",
+				 "host":"127.0.0.1",
+				 "user":"root",
+				 "password":"root",
+				 "database":"test_development"
+			},
+			{
+				 "id":"production",
+				 "host":"127.0.0.1",
+				 "user":"root",
+				 "password":"root",
+				 "database":"test_production"
 			}
 	 ]
 }
