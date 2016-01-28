@@ -8,13 +8,24 @@ const co = require("co");
 console.log("***: Staring up Schemer");
 
 co(function* coWrap() {
+	const schemas = {};
+	// loop through every config env in the config
 	for (const db of config.databases) {
+		// set up the sub-object for this env schema
 		const connection = yield getConnection(db);
 		const tables = yield getTables(db, connection);
-		const schema = yield getSchema(db, connection, tables);
+		schemas[db.id] = yield getSchema(db, connection, tables);
 		console.log("***: Shutting down Schemer");
-		return process.exit();
 	}
+	// we've gotten all the schema for all the tables for all envs.
+	for (const schema in schemas) {
+		// guard for in for linter
+		if (schema.hasOwnProperty.call(schemas, schema)) {
+			// this is a list of all envs
+			console.log("schema", schema);
+		}
+	}
+	return process.exit();
 }).catch((err) => {
 	console.error(err.stack);
 	console.log("***: Dying...");
@@ -46,9 +57,12 @@ function* getSchema(dbConfig, connection, tables) {
 	const schemaObj = {};
 	console.log("** : Getting schema for all tables");
 	for (const table of tables) {
-		const result = yield connection.query(`DESCRIBE \`${table[tableKey]}\``);
-		console.log(`*  : Describing table ${table[tableKey]} (${result.length} columns found)`);
-		schemaObj[table] = result;
+		schemaObj[table[tableKey]] = yield connection.query(`DESCRIBE \`${table[tableKey]}\``);
+		console.log(`*  : Describing table ${table[tableKey]} (${schemaObj[table[tableKey]].length} columns found)`);
 	}
 	return schemaObj;
+}
+
+function compareColumn(schemas, key) {
+	
 }
