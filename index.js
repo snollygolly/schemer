@@ -4,7 +4,7 @@ const config = require("./config.json");
 
 const mysql = require("promise-mysql");
 const co = require("co");
-const _ = require('lodash');
+const _ = require("lodash");
 
 console.log("***: Staring up Schemer");
 
@@ -102,13 +102,18 @@ function compareTable(schemas, table) {
 				change[schemas[i].id] = {
 					table: table,
 					disposition: "match",
+					result: "No Action Needed",
 					schema: schemas[i].schema[table]
 				};
 			} else {
 				// it's not equal
+				// find differences on a per table basis
+				// TODO: sort the arrays!
+				const differences = findDifferencesInArrays(schemas[0].schema[table], schemas[i].schema[table]);
 				change[schemas[i].id] = {
 					table: table,
 					disposition: "no match",
+					result: differences,
 					schema: schemas[i].schema[table]
 				};
 			}
@@ -117,6 +122,7 @@ function compareTable(schemas, table) {
 			change[schemas[i].id] = {
 				table: table,
 				disposition: "missing",
+				result: "Table Missing",
 				schema: schemas[i].schema[table]
 			};
 		}
@@ -127,9 +133,45 @@ function compareTable(schemas, table) {
 	function doReporting(changeObj) {
 		let message = "";
 		for (const db of config.databases) {
+			if (change[db.id].disposition === "no match") {
+				// it doesn't match, let's find out why
+				// console.log(`*  : ${change[db.id].result}`);
+				for (const difference of change[db.id].result) {
+					// this cycles through all the differences
+					console.log(`** : Difference found in column '${difference.name}', property '${difference.property}', for ${db.id} database`);
+					console.log(`** : Master Value: [${difference.master_value}] Peer Value: [${difference.peer_value}]`);
+				}
+			}
 			message += `${db.id}: [${change[db.id].disposition}] `;
 		}
 		console.log(`*  : Reporting Change - ${message}`);
-		// console.log(`Change Object: ${JSON.stringify(changeObj)}`);
 	}
+}
+
+function findDifferencesInArrays(masterArr, peerArr) {
+	let differences = [];
+	let i = 0;
+	while (i < masterArr.length) {
+		const newDiff = findDifferencesInObjects(masterArr[i], peerArr[i]);
+		differences = _.concat(differences, newDiff);
+		i++;
+	}
+	return differences;
+}
+
+function findDifferencesInObjects(masterObj, peerObj) {
+	const differences = _.reduce(masterObj, function reduceArr(result, value, key) {
+		return _.isEqual(value, peerObj[key]) ? result : result.concat(key);
+	}, []);
+	const returnDifferences = [];
+	for (const difference of differences) {
+		const diffObj = {
+			name: masterObj.Field,
+			property: difference,
+			master_value: masterObj[difference],
+			peer_value: peerObj[difference]
+		};
+		returnDifferences.push(diffObj);
+	}
+	return returnDifferences;
 }
