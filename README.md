@@ -3,19 +3,19 @@
 
 ## Installation
 
-Clone down the repository
+- Clone down the repository
 ```
 git clone https://github.com/sq1agency/schemer.git
 ```
 
-Install packages
+- Install packages
 ```
 npm install
 ```
 
-Make sure you have a schemer.json file in the root
+- Make sure you have a schemer.json file in the root
 
-Run it!
+- Run it!
 ```
 npm start
 ```
