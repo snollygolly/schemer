@@ -13,7 +13,7 @@ git clone https://github.com/sq1agency/schemer.git
 npm install
 ```
 
-- Make sure you have a schemer.json file in the root
+- Make sure you have a `schemer.json` file in the root
 
 - Run it!
 ```
