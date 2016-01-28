@@ -1,10 +1,12 @@
 "use strict";
 
-const config = require("./config.json");
+const config = require("./schemer.json");
 
 const mysql = require("promise-mysql");
 const co = require("co");
 const _ = require("lodash");
+
+const HANDLE_TYPE = "console_report";
 
 console.log("***: Staring up Schemer");
 
@@ -72,7 +74,7 @@ function compareTable(schemas, table) {
 	console.log(`*  : Comparing table '${table}' to master`);
 	// the change handler will handle what to do once changes are found, reporting is default
 	const changeHandler = {
-		report: doReporting
+		console_report: doConsoleReporting
 	};
 	const change = {};
 	// some error checking
@@ -108,7 +110,6 @@ function compareTable(schemas, table) {
 			} else {
 				// it's not equal
 				// find differences on a per table basis
-				// TODO: sort the arrays!
 				const differences = findDifferencesInArrays(schemas[0].schema[table], schemas[i].schema[table]);
 				change[schemas[i].id] = {
 					table: table,
@@ -129,8 +130,8 @@ function compareTable(schemas, table) {
 		i++;
 	}
 	// return the output
-	changeHandler["report"](change);
-	function doReporting(changeObj) {
+	changeHandler[HANDLE_TYPE](change);
+	function doConsoleReporting(changeObj) {
 		let message = "";
 		for (const db of config.databases) {
 			if (change[db.id].disposition === "no match") {
